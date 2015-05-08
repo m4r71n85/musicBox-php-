@@ -6,13 +6,21 @@ abstract class BaseController {
     protected $layoutName = DEFAULT_LAYOUT;
     protected $isViewRendered = false;
     protected $isPost = false;
+    protected $user;
+    protected $isLoggedIn = false;
 
+    
     function __construct($controllerName, $actionName) {
         $this->controllerName = $controllerName;
         $this->actionName = $actionName;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->isPost = true;
         }
+        
+        if(isset($_SESSION['username'])){
+            $this->isLoggedIn = true;
+        }
+        
         $this->onInit();
     }
 
@@ -62,6 +70,17 @@ abstract class BaseController {
         $this->redirectToUrl($url);
     }
 
+    public function getUsername(){
+        return $_SESSION['username'];
+    }
+    
+    public function setUsername($username){
+        $_SESSION['username'] = $username;
+    }
+    
+    public function clearUsername(){
+        unset($_SESSION['username']);
+    }
     function addMessage($msg, $type) {
         if (!isset($_SESSION['messages'])) {
             $_SESSION['messages'] = array();
