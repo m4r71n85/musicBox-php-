@@ -8,7 +8,7 @@ abstract class BaseController {
     protected $isPost = false;
     protected $user;
     protected $isLoggedIn = false;
-
+    protected $viewbag = array();
     
     function __construct($controllerName, $actionName) {
         $this->controllerName = $controllerName;
@@ -95,5 +95,9 @@ abstract class BaseController {
 
     function addErrorMessage($msg) {
         $this->addMessage($msg, 'error');
+    }
+    
+    function generateRandomString($length = 10) {
+        return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
     }
 }

@@ -1,19 +1,25 @@
     <?php
 
-    class AuthorsModel extends BaseModel {
+    class SongsModel extends BaseModel {
         public function getAll() {
             $statement = self::$db->query(
-                "SELECT * FROM authors ORDER BY id");
+                "SELECT * FROM songs ORDER BY id");
             return $statement->fetch_all(MYSQLI_ASSOC);
         }
+        
+        public function getByUserId(){
+            
+        }
 
-        public function createAuthor($name) {
+        public function uploadSong($title, $filename, $user_id, $genre_id) {
             if ($name == '') {
                 return false;
             }
             $statement = self::$db->prepare(
-                "INSERT INTO authors VALUES(NULL, ?)");
-            $statement->bind_param("s", $name);
+                "INSERT INTO `musicbox`.`songs` "
+                    . "(`id`, `title`, `filename`, `user_id`, `genre_id`) "
+                    . "VALUES (NULL, '?', '?', '?', '?');");
+            $statement->bind_param($title, $filename, $user_id, $genre_id);
             $statement->execute();
             return $statement->affected_rows > 0;
         }
@@ -25,4 +31,5 @@
             $statement->execute();
             return $statement->affected_rows > 0;
         }
+        
     }
