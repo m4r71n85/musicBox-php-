@@ -7,7 +7,7 @@
     
     
     <label for="genre">Genre: </label>
-    <select>
+    <select name="genre" id="genre">
         <?php foreach ($this->viewbag["genres"] as $genre):?>
         
         <option value="<?=$genre["id"]?>"><?=$genre["name"]?></option>

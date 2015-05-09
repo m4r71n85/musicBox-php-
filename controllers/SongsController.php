@@ -5,12 +5,15 @@ class SongsController extends BaseController {
     private $genresDb;
 
     public function onInit() {
-        $this->title = "Songs";
+        $this->title = "All Songs";
         $this->db = new SongsModel();
         $this->genresDb = new GenresModel();
     }
 
     public function index() {
+        $songs = $this->db->getAll();
+
+        $this->viewbag["songs"] = $songs;
         $this->renderView();
     }
     
@@ -37,15 +40,21 @@ class SongsController extends BaseController {
                 }
                 
                 if (move_uploaded_file($_FILES["song"]["tmp_name"], $target_file)) {
-                    $this->addInfoMessage("The file ". basename($_FILES["song"]["name"]). " has been uploaded.");
-                } else {
-                    $this->addErrorMessage("Sorry, there was an error uploading your file.");
-                    $this->renderView(__FUNCTION__);
-                    return;
+                    $songTitle = substr($_FILES["song"]["name"], 0, -4);
+                    $genreId = $_POST["genre"];
+                    $user_id = $this->getUserDetails()["id"];
+                    $isUploaded = $this->db->uploadSong($songTitle, $fileNewName, $user_id, $genreId);
+                    if($isUploaded){
+                        $this->addInfoMessage("The file ". basename($_FILES["song"]["name"]). " has been uploaded.");
+                        $this->renderView();
+                        return;
+                    }
                 }
-//                $this->db->uploadSong($title, $filename, $user_id, $genre_id)
+
+                $this->addErrorMessage("Sorry, there was an error uploading your file.");
             }
         }
+        
         $this->renderView();
     }
 }

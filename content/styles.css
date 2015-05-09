@@ -1,18 +1,17 @@
-body>header {
-    background: #eee;
-    padding: 5px;
+.main-container{
+    margin-top: 20px;
 }
 
-body>header>a>img, body>header ul, body>header ul>li  {
-    display: inline-block;
-    vertical-align: middle;
+ul.messages{
+    list-style: none;
+    display: none;
+    cursor: pointer;
 }
-
-
-body>footer {
-    background: #eee;
-    padding: 5px;
-    text-align: center;
+ul.messages:hover{
+    opacity: 0.9;
+}
+ul.messages li{
+    padding: 10px;
 }
 
 li.info {
