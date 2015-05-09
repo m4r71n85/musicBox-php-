@@ -17,7 +17,7 @@ abstract class BaseController {
             $this->isPost = true;
         }
         
-        if(isset($_SESSION['username'])){
+        if(isset($_COOKIE["user_details"])){
             $this->isLoggedIn = true;
         }
         
@@ -69,22 +69,38 @@ abstract class BaseController {
         }
         $this->redirectToUrl($url);
     }
-
-    public function getUsername(){
-        return $_SESSION['username'];
+    
+    public function getUserDetails(){
+        return unserialize($_COOKIE["user_details"]);
     }
     
-    public function setUsername($username){
-        $_SESSION['username'] = $username;
+    public function loginUser($userDetails){
+        setcookie("user_details", serialize($userDetails), time()+3600, '/', NULL, 0 );
     }
     
-    public function clearUsername(){
-        unset($_SESSION['username']);
+    public function logoutUser(){
+        setcookie("user_details", "", time()-3600, '/', NULL, 0 );
     }
+    
+    public function authorized(){
+        if(!$this->isLoggedIn){
+            $this->addErrorMessage("You have to login first!");
+            $this->redirect("account", "login");
+        }
+    }
+    
+    public function anonymous(){
+        if($this->isLoggedIn){
+            $this->addErrorMessage("You are already logged in!");
+            $this->redirect("home");
+        }
+    }
+    
+    
     function addMessage($msg, $type) {
         if (!isset($_SESSION['messages'])) {
             $_SESSION['messages'] = array();
-        };
+        }
         array_push($_SESSION['messages'],
             array('text' => $msg, 'type' => $type));
     }

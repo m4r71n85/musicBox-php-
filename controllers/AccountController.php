@@ -6,6 +6,7 @@ class AccountController extends BaseController{
         $this->db = new AccountModel();
     }
     public function register(){
+        $this->anonymous();
         if($this->isPost){
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -21,13 +22,13 @@ class AccountController extends BaseController{
                 return;
             }
             
-            $isRegistered = $this->db->register($username, $password);
-            if($isRegistered){
-                parent::setUsername($username);
-                $this->addInfoMessage("Registration successful");
-                $this->redirect("books", "index");
+            $userDetails = $this->db->register($username, $password);
+            if($userDetails){
+                parent::loginUser($userDetails);
+                $this->addInfoMessage("Registration and login successful");
+                $this->redirect("songs", "index");
             } else {
-                $this->addErrorMessage("Register failed");
+                $this->addErrorMessage("Registration failed");
             }
         }
         
@@ -35,6 +36,7 @@ class AccountController extends BaseController{
     }
     
     public function login() {
+        $this->anonymous();
         if($this->isPost){
             $username = $_POST['username'];
             $password = $_POST['password'];
@@ -49,9 +51,9 @@ class AccountController extends BaseController{
                 $this->renderView(__FUNCTION__);
                 return;
             }
-            $isLoggedIn = $this->db->login($username, $password);
-            if($isLoggedIn){
-                parent::setUsername($username);
+            $userDetails = $this->db->login($username, $password);
+            if($userDetails){
+                parent::loginUser($userDetails);
                 $this->addInfoMessage("Login successful!");
                 $this->redirect("books", "index");
             }
@@ -65,7 +67,8 @@ class AccountController extends BaseController{
     }
     
     public function logout() {
-        parent::clearUsername();
+        $this->authorized();
+        parent::logoutUser();
         $this->addInfoMessage("Good bye!");
         $this->redirect("home");
     }

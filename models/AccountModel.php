@@ -17,7 +17,7 @@ class AccountModel extends BaseModel{
         $registerStatement->bind_param("ss", $username, $hash_pass);
         $registerStatement->execute();
         
-        return true;
+        $this->login($username, $password);
     }
     
     public function login($username, $password) {
@@ -25,9 +25,10 @@ class AccountModel extends BaseModel{
         $statement->bind_param("s", $username);
         $statement->execute();
         $result = $statement->get_result()->fetch_assoc();
-
+        
         if(password_verify($password, $result['pass_hash'] )){
-            return true;
+            unset($result['pass_hash']);
+            return $result;
         }
         
         return false;

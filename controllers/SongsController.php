@@ -43,9 +43,7 @@ class SongsController extends BaseController {
                     $this->renderView(__FUNCTION__);
                     return;
                 }
-                
-                
-                
+//                $this->db->uploadSong($title, $filename, $user_id, $genre_id)
             }
         }
         $this->renderView();

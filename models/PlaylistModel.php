@@ -15,7 +15,7 @@ class PlaylistModel extends BaseModel {
     
     public function getAll() {
         $statement = self::$db->query(
-                "SELECT p.id, p.name, u.username, count(ps.id) as soungs_amount, IFNULL((sum(pr.rank_value)/count(pr.id)), "-") as rank
+                "SELECT p.id, p.name, u.username, count(ps.id) as soungs_amount, IFNULL((sum(pr.rank_value)/count(pr.id)), '-') as rank, count(pr.id) as votes
                 FROM `playlist` as p
                 left join users as u ON (p.creator_id = u.id)
                 left join playlist_songs as ps ON (p.id = ps.playlist_id)
@@ -27,7 +27,7 @@ class PlaylistModel extends BaseModel {
     
     public function getDetails($id) {
         $statement = self::$db->query(
-                "SELECT p.id, p.name, u.username, IFNULL((sum(pr.rank_value)/count(pr.id)), "-") as rank
+                "SELECT p.id, p.name, u.username, IFNULL((sum(pr.rank_value)/count(pr.id)), '-') as rank, count(pr.id) as votes
                 FROM `playlist` as p
                 left join users as u ON (p.creator_id = u.id)
                 left join playlist_rank as pr ON (p.id = pr.playlist_id)
@@ -40,7 +40,7 @@ class PlaylistModel extends BaseModel {
     
     public function getSongs($id) {
         $statement = self::$db->query(
-                "SELECT s.id, s.title, s.filename, g.name as 'genre-name', u.username, IFNULL((sum(sr.rank_value)/count(sr.id)), "-") as rank
+                "SELECT s.id, s.title, s.filename, g.name as 'genre-name', u.username, IFNULL((sum(sr.rank_value)/count(sr.id)), '-') as rank
                 FROM `playlist` as p
                 LEFT JOIN playlist_songs as ps ON (ps.playlist_id = p.id)
                 LEFT JOIN songs as s ON (ps.song_id = s.id)
