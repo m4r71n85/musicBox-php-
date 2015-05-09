@@ -12,12 +12,11 @@ class AccountModel extends BaseModel{
         }
         
         $hash_pass = password_hash($password, PASSWORD_BCRYPT);
-        $registerStatement = self::$db->prepare("INSERT INTO Users (username, pass_hash) VALUES (?, ?)");
+        $statement = self::$db->prepare("INSERT INTO Users (username, pass_hash) VALUES (?, ?)");
         
-        $registerStatement->bind_param("ss", $username, $hash_pass);
-        $registerStatement->execute();
-        
-        $this->login($username, $password);
+        $statement->bind_param("ss", $username, $hash_pass);
+        $statement->execute();
+        return $statement->affected_rows > 0;
     }
     
     public function login($username, $password) {

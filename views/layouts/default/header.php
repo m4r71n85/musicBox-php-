@@ -12,10 +12,11 @@
     <title> MusicBox - <?php if (isset($this->title)) echo htmlspecialchars($this->title) ?></title>
 
     <link href="/content/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/content/css/bootstrap-calm-blue.css" rel="stylesheet" type="text/css"/>
     <link href="/content/css/modern-business.css" rel="stylesheet">
     <link href="/content/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/content/css/star-rating.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="/content/styles.css" />
-
 </head>
 
 <body>

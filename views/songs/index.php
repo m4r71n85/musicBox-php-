@@ -1,40 +1,34 @@
 <h1>All songs</h1>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Play</th>    
-            <th>Uploader</th>
-            <th>Genre</th>
-            <th>Rating</th>
-            <th>Votes</th>
-            <th></th>
-        </tr>
-    </thead>
+<div class="row">
 <?php foreach ($this->viewbag["songs"] as $song): ?>
-    <tr>
-        <td><?=$song['title']?></td>
-        <td>
+    <div class="col-md-4 col-sm-6 song-tiles">
+        <div class="col-sm-12">
+            <div style="height: 50px">
+                <b><?=$song['title']?></b>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <audio controls>
                 <source src="/uploads/<?=$song['filename']?>" type="audio/mpeg">
               Your browser does not support the audio element.
-              </audio>
-        </td>
-        <td><?=$song['username']?></td>
-        <td><?=$song['name']?></td>
-        <td><?=$song['rank']?></td>
-        <td><?=$song['votes']?></td>
-        <td>
-                <form action="songs/controls/<?=$song['id']?>" method="post" style="display:inline-block">
-                    <button class="btn btn-sm btn-success glyphicon glyphicon-thumbs-up" type="submit" value="like" name="action"></button>
-                    <button class="btn btn-sm btn-danger glyphicon glyphicon-thumbs-down" type="submit" value="dislike" name="action"></button>
-                </form>
-                <form target="_blank" action="songs/download" method="post" style="display:inline-block">
+            </audio>
+        </div>
+        <div class="col-sm-12"><b>By user: </b><?=$song['username']?></div>
+        <div class="col-sm-12"><b>Genre: </b><?=$song['name']?></div>
+        <div class="col-sm-12">
+            <form action="/songs/rate/<?=$song['id']?>" method="post" style="display:inline-block">
+                <input value="<?=$song['rank']?>" class="rating form-control" data-step="1" data-max="5" data-min="0" data-size="xs"  data-show-caption="false" data-show-clear="false" name="rating-value">
+            </form> / <?=$song['votes']?>
+            <div class="pull-right">
+                <form target="_blank" action="/songs/download" method="post" style="display:inline-block">
+                    <button class="btn btn-sm btn-info glyphicon glyphicon-download-alt" type="submit" value="download" name="action"></button>
                     <input type="hidden" value="uploads/<?=$song['filename']?>" name="filename"  >
                     <input type="hidden" value="<?=$song['title']?>.mp3" name="filetitle" />
-                    <button class="btn btn-sm btn-info glyphicon glyphicon-download-alt" type="submit" value="download" name="action"></button>
                 </form>
-        </td>
-    </tr>
+                <button class="btn btn-sm btn-info glyphicon glyphicon-comment"></button>
+                <button class="btn btn-sm btn-info glyphicon glyphicon-plus"></button>
+            </div>
+        </div>
+    </div>
 <?php endforeach; ?>
-</table>
+</div>

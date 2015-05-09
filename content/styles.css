@@ -21,3 +21,13 @@ li.info {
 li.error {
     background: #f77;
 }
+
+audio, canvas, progress, video{
+    width:100%;
+}
+.song-tiles{
+    padding: 25px 0;
+}
+.song-tiles:hover{
+    background-color: #d9edf7;
+}

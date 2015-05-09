@@ -22,8 +22,9 @@ class AccountController extends BaseController{
                 return;
             }
             
-            $userDetails = $this->db->register($username, $password);
-            if($userDetails){
+            $success = $this->db->register($username, $password);
+            if($success){
+                $userDetails = $this->db->login($username, $password);
                 parent::loginUser($userDetails);
                 $this->addInfoMessage("Registration and login successful");
                 $this->redirect("songs", "index");

@@ -16,27 +16,24 @@ class SongsController extends BaseController {
         $this->viewbag["songs"] = $songs;
         $this->renderView();
     }
-    public function controls($songId){
+    public function rate($songId){
         $this->authorized();
         
         if($this->isPost){
-            $action = $_POST['action'];
+            $ratingValue = $_POST['rating-value'];
             $userId = $this->getUserDetails()["id"];
-            switch ($action) {
-                case "like":
-                        $this->db->like();
-                    break;
-                case "dislike":
-                        $this->db->dislike();
-                    break;
-                case "download":
-                        
-                    break;
-                default:
-                    break;
+            
+            if(0<=$ratingValue && $ratingValue<=5){
+                $success = $this->db->vote($songId, $userId, $ratingValue);
+                if(!$success){
+                    $this->addErrorMessage("You cannot vote for this song!");
+                }
+            } else{
+                $this->addErrorMessage("Your vote must be between 0 and 5!");
             }
         }
-        $this->redirect("songs");
+        
+        $this->redirect("Songs");
     }
     
       

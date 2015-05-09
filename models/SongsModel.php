@@ -3,7 +3,7 @@
     class SongsModel extends BaseModel {
         public function getAll() {
             $statement = self::$db->query(
-                "SELECT s.id, s.title, s.filename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '-') as rank, count(sr.id) as votes
+                "SELECT s.id, s.title, s.filename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
                 FROM `songs` as s
                 LEFT JOIN users as u ON (s.user_id = u.id)
                 LEFT JOIN genres as g ON (s.genre_id = g.id)
@@ -63,4 +63,16 @@
             return $statement->affected_rows > 0;
         }
         
+        public function vote($songId, $userId, $ratingValue) {
+            if (!$songId || !$userId || !$ratingValue) {
+                return false;
+            }
+            $statement = self::$db->prepare(
+                "INSERT INTO `musicbox`.`song_rank`
+                (`id`, `song_id`, `user_id`, `rank_value`)
+                VALUES (NULL, ?, ?, ?);");
+            $statement->bind_param("iii", $songId, $userId, $ratingValue);
+            $statement->execute();
+            return $statement->affected_rows > 0;
+        }
     }
