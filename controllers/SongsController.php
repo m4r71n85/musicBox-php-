@@ -43,9 +43,8 @@ class SongsController extends BaseController {
             $fileNewName = $this->generateRandomString();
             if(isset($_POST["submit"])) {
                 $rowId = $this->saveMusicFile($fileNewName);
-                if($rowId && $_FILES["image"]){
-                    $asd = $this->saveImageFile($rowId, $fileNewName);
-                    var_dump($asd);
+                if($rowId && $_FILES["image"]["name"]){
+                    $this->saveImageFile($rowId, $fileNewName);
                 }
             }
         }

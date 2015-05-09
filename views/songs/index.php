@@ -8,7 +8,12 @@
             </div>
         </div>
         <div class="col-sm-12 text-center" style="padding-bottom: 10px;">
-            <img src="/uploads/covers/<?=$song['imagename']?>" style="max-width: 100%; max-height: 100%; min-height: 300px;"/></b>
+            <?php if($song['imagename']): ?>
+                <img src="/uploads/covers/<?=$song['imagename']?>" style="max-width: 100%; max-height: 100%; min-height: 300px;"/>
+            <?php else: ?>
+                <img src="/content/img/music.jpg" style="max-width: 100%; max-height: 100%; min-height: 300px;"/>
+            <?php endif; ?>
+
         </div>
         <div class="col-sm-12">
             <audio controls>
