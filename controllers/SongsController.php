@@ -16,7 +16,30 @@ class SongsController extends BaseController {
         $this->viewbag["songs"] = $songs;
         $this->renderView();
     }
+    public function controls($songId){
+        $this->authorized();
+        
+        if($this->isPost){
+            $action = $_POST['action'];
+            $userId = $this->getUserDetails()["id"];
+            switch ($action) {
+                case "like":
+                        $this->db->like();
+                    break;
+                case "dislike":
+                        $this->db->dislike();
+                    break;
+                case "download":
+                        
+                    break;
+                default:
+                    break;
+            }
+        }
+        $this->redirect("songs");
+    }
     
+      
     public function upload(){
         $this->viewbag["genres"] = $this->genresDb->getAll();
         if($this->isPost){
@@ -56,5 +79,26 @@ class SongsController extends BaseController {
         }
         
         $this->renderView();
+    }
+    
+    public function download(){
+        $this->authorized();
+        
+        if($this->isPost){
+            $file_url = $_POST["filename"];
+            $filetitle = str_replace(" ", "_", $_POST["filetitle"]);
+            header("Content-disposition: attachment; filename=".$filetitle);
+            header("Content-type: audio/mpeg");
+            readfile($file_url);
+            
+            header('Content-Type: audio/mpeg');
+            header("Content-Transfer-Encoding: Binary"); 
+            header("Content-disposition: attachment; filename=\"" . basename($file_url) . "\"");
+            
+            readfile($file_url);
+        }
+        else {
+            $this->redirect("songs");
+        }
     }
 }
