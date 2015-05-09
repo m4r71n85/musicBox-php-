@@ -14,6 +14,22 @@
             return $statement->fetch_all(MYSQLI_ASSOC);
         }
         
+        public function getById($songId) {
+            $statement = self::$db->prepare(
+                "SELECT s.id, s.title, s.filename, s.imagename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
+                FROM `songs` as s
+                LEFT JOIN users as u ON (s.user_id = u.id)
+                LEFT JOIN genres as g ON (s.genre_id = g.id)
+                LEFT JOIN song_rank as sr ON (sr.song_id = s.id)
+                WHERE s.Id = ?
+                GROUP BY s.id
+                ORDER BY (sum(sr.rank_value)/count(sr.id)) DESC, s.title ASC");
+            
+            $statement->bind_param("i", $songId);
+            $statement->execute();
+            return $statement->get_result()->fetch_assoc();
+        }
+        
         public function getByUserId($userId){
             $statement = self::$db->query(
                 "SELECT s.id, s.title, s.filename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '-') as rank, count(sr.id) as votes
@@ -86,6 +102,32 @@
                 (`id`, `song_id`, `user_id`, `rank_value`)
                 VALUES (NULL, ?, ?, ?);");
             $statement->bind_param("iii", $songId, $userId, $ratingValue);
+            $statement->execute();
+            return $statement->affected_rows > 0;
+        }
+        
+        public function getComments($songId) {
+            $statement = self::$db->prepare(
+                "SELECT sc.text, sc.date_created, u.username
+                FROM `songs_comments` as sc
+                LEFT JOIN users as u ON (sc.user_id = u.id)
+                where song_id = ?
+                ORDER BY sc.date_created DESC");
+            
+            $statement->bind_param("i", $songId);
+            $statement->execute();
+            return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+        
+        public function addComment($songId, $userId, $comment) {
+            if (!$songId || !$userId || !$comment) {
+                return false;
+            }
+            $statement = self::$db->prepare(
+                "INSERT INTO `musicbox`.`songs_comments`
+                (`id`, `song_id`, `user_id`, `text`, `date_created`)
+                VALUES (NULL, ?, ?, ?, CURRENT_TIMESTAMP);");
+            $statement->bind_param("iis", $songId, $userId, $comment);
             $statement->execute();
             return $statement->affected_rows > 0;
         }

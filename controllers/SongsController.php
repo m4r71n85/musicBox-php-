@@ -38,6 +38,8 @@ class SongsController extends BaseController {
     
       
     public function upload(){
+        $this->authorized();
+
         $this->viewbag["genres"] = $this->genresDb->getAll();
         if($this->isPost){
             $fileNewName = $this->generateRandomString();
@@ -52,7 +54,53 @@ class SongsController extends BaseController {
         $this->renderView();
     }
     
+    public function download(){
+        $this->authorized();
+        
+        if($this->isPost){
+            $file_url = $_POST["filename"];
+            $filetitle = str_replace(" ", "_", $_POST["filetitle"]);
+            header("Content-disposition: attachment; filename=".$filetitle);
+            header("Content-type: audio/mpeg");
+            readfile($file_url);
+            
+            header('Content-Type: audio/mpeg');
+            header("Content-Transfer-Encoding: Binary"); 
+            header("Content-disposition: attachment; filename=\"" . basename($file_url) . "\"");
+            
+            readfile($file_url);
+        }
+        else {
+            $this->redirect("songs");
+        }
+    }
+    
+    public function comments($songId){
+        $this->viewbag['song'] = $this->db->getById($songId);
+        $this->viewbag['comments'] = $this->db->getComments($songId);
+        if($this->isPost){
+            $this->authorized();
+            
+            $comment = $_POST['comment'];
+            if(!$comment || strlen($comment)<10){
+                $this->addErrorMessage("Your comment should be at last 10 symbols!");
+                return $this->renderView(__FUNCTION__);
+            }
+            
+            $userId = $this->getUserDetails()['id'];
+            $isCommentAdded = $this->db->addComment($songId, $userId, $comment);
+            if($isCommentAdded){
+                $this->addInfoMessage("Comment added!");
+            } else {
+                $this->addErrorMessage("Comment wasn't added!");
+            }
+        }
+        $this->renderView(__FUNCTION__);
+    }
+    
     private function saveImageFile($rowId, $fileNewName){
+        $this->authorized();
+
         $target_dir = "uploads/covers/";
         $imageFileType = pathinfo($_FILES["image"]["name"],PATHINFO_EXTENSION);
         $target_full_path = $target_dir . $fileNewName.".".$imageFileType;
@@ -88,6 +136,8 @@ class SongsController extends BaseController {
     }
     
     private function saveMusicFile($fileNewName){
+        $this->authorized();
+
         $extension = explode(".", $_FILES["song"]["name"]);
         $extension = $extension[count($extension)-1];
         $fileNewName .= ".".$extension;
@@ -119,26 +169,5 @@ class SongsController extends BaseController {
 
         $this->addErrorMessage("Sorry, there was an error uploading your file.");
         return false;
-    }
-    
-    public function download(){
-        $this->authorized();
-        
-        if($this->isPost){
-            $file_url = $_POST["filename"];
-            $filetitle = str_replace(" ", "_", $_POST["filetitle"]);
-            header("Content-disposition: attachment; filename=".$filetitle);
-            header("Content-type: audio/mpeg");
-            readfile($file_url);
-            
-            header('Content-Type: audio/mpeg');
-            header("Content-Transfer-Encoding: Binary"); 
-            header("Content-disposition: attachment; filename=\"" . basename($file_url) . "\"");
-            
-            readfile($file_url);
-        }
-        else {
-            $this->redirect("songs");
-        }
     }
 }

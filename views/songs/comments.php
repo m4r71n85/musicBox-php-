@@ -1,7 +1,11 @@
-<h1>All songs <a href="/songs/upload" class="btn btn-info">Upload a song</a></h1>
+<pre>
+    <?php $song = $this->viewbag['song'];
+    var_dump($this->viewbag['comments']);
+        
+    ?>
+</pre>  
 <div class="row">
-<?php foreach ($this->viewbag["songs"] as $song): ?>
-    <div class="col-md-4 col-sm-6 song-tiles">
+    <div class="col-md-4 col-sm-6">
         <div class="col-sm-12">
             <div style="height: 50px">
                 <b><?=$song['title']?></b>
@@ -26,7 +30,7 @@
         <div class="col-sm-12">
             <form action="/songs/rate/<?=$song['id']?>" method="post" style="display:inline-block">
                 <input value="<?=$song['rank']?>" class="rating form-control" data-step="1" data-max="5" data-min="0" data-size="xs"  data-show-caption="false" data-show-clear="false" name="rating-value">
-            </form>
+            </form> / <?=$song['votes']?>
             <div class="pull-right">
                 <form target="_blank" action="/songs/download" method="post" style="display:inline-block">
                     <button class="btn btn-sm btn-info glyphicon glyphicon-download-alt" type="submit" value="download" name="action"></button>
@@ -37,9 +41,21 @@
                 <button class="btn btn-sm btn-info glyphicon glyphicon-plus"></button>
             </div>
         </div>
-        <div class="col-sm-12">
-            (voted: <?=$song['votes']?> )
+    </div>
+    <div class="col-md-6">
+        <?php if(!$this->viewbag['comments']): ?>
+            <div class="well">Oops. There are no comments yet.</div>
+        <?php endif; ?>
+            <?php foreach ($this->viewbag['comments'] as $comment): ?>
+                <div class="well">
+                    <div style="font-weight: bold"><?=$comment['username']?></div>
+                    <?=$comment['text']?>
+                    <div class="text-muted" ><?=$comment['date_created']?></div>
+                </div>
+            <?php endforeach; ?>
+        <form method="post">
+            <textarea class="form-control" name="comment"></textarea>
+            <button type="submit" class="btn btn-default btn-info pull-right">Comment</button>
         </div>
     </div>
-<?php endforeach; ?>
 </div>

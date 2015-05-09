@@ -68,7 +68,17 @@
                         <button type="submit" class="btn btn-default">Logout</button>
                     </form>
                     <p class="navbar-text navbar-right">Hello, <?= $this->getUserDetails()["username"]; ?></p>
+                <?php else: ?>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/account/login">Login</a>
+                        </li>
+                        <li>
+                            <a href="/account/register">Register</a>
+                        </li>
+                    </ul>
                 <?php endif; ?>
+
             </div>
             <!-- /.navbar-collapse -->
         </div>

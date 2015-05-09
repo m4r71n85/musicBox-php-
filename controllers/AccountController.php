@@ -71,7 +71,7 @@ class AccountController extends BaseController{
         $this->authorized();
         parent::logoutUser();
         $this->addInfoMessage("Good bye!");
-        $this->redirect("home");
+        $this->redirect("songs");
     }
     
     
