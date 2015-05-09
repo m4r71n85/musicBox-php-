@@ -67,7 +67,7 @@
                     <form class="navbar-form navbar-right" action="/account/logout" method="post">
                         <button type="submit" class="btn btn-default">Logout</button>
                     </form>
-                    <p class="navbar-text navbar-right">Hello, <?= $this->getUserDetails()["username"]; ?></p>
+                    <p class="navbar-text navbar-right">Hello, <?= htmlspecialchars($this->getUserDetails()["username"]); ?></p>
                 <?php else: ?>
                     <ul class="nav navbar-nav navbar-right">
                         <li>

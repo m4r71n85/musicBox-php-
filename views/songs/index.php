@@ -21,7 +21,7 @@
               Your browser does not support the audio element.
             </audio>
         </div>
-        <div class="col-sm-12"><b>Uploaded by: </b><?=$song['username']?></div>
+        <div class="col-sm-12"><b>Uploaded by: </b><?=htmlspecialchars($song['username'])?></div>
         <div class="col-sm-12"><b>Genre: </b><?=$song['name']?></div>
         <div class="col-sm-12">
             <form action="/songs/rate/<?=$song['id']?>" method="post" style="display:inline-block">

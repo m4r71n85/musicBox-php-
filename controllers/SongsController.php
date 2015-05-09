@@ -1,6 +1,7 @@
-<?php   
+<?php
 
 class SongsController extends BaseController {
+
     private $db;
     private $genresDb;
 
@@ -16,108 +17,110 @@ class SongsController extends BaseController {
         $this->viewbag["songs"] = $songs;
         $this->renderView();
     }
-    public function rate($songId){
+
+    public function rate($songId) {
         $this->authorized();
-        
-        if($this->isPost){
+
+        if ($this->isPost) {
             $ratingValue = $_POST['rating-value'];
             $userId = $this->getUserDetails()["id"];
-            
-            if(0<=$ratingValue && $ratingValue<=5){
+
+            if (0 <= $ratingValue && $ratingValue <= 5) {
                 $success = $this->db->vote($songId, $userId, $ratingValue);
-                if(!$success){
+                if (!$success) {
                     $this->addErrorMessage("You cannot vote for this song!");
                 }
-            } else{
+            } else {
                 $this->addErrorMessage("Your vote must be between 0 and 5!");
             }
         }
-        
-        $this->redirect("Songs");
+        if (isset($_POST['redirectTo'])) {
+            $this->redirectToUrl($_POST['redirectTo']);
+        } else {
+            $this->redirect("songs");
+        }
     }
-    
-      
-    public function upload(){
+
+    public function upload() {
         $this->authorized();
 
         $this->viewbag["genres"] = $this->genresDb->getAll();
-        if($this->isPost){
+        if ($this->isPost) {
             $fileNewName = $this->generateRandomString();
-            if(isset($_POST["submit"])) {
+            if (isset($_POST["submit"])) {
                 $rowId = $this->saveMusicFile($fileNewName);
-                if($rowId && $_FILES["image"]["name"]){
+                if ($rowId && $_FILES["image"]["name"]) {
                     $this->saveImageFile($rowId, $fileNewName);
                 }
             }
         }
-        
+
         $this->renderView();
     }
-    
-    public function download(){
+
+    public function download() {
         $this->authorized();
-        
-        if($this->isPost){
+
+        if ($this->isPost) {
             $file_url = $_POST["filename"];
             $filetitle = str_replace(" ", "_", $_POST["filetitle"]);
-            header("Content-disposition: attachment; filename=".$filetitle);
+            header("Content-disposition: attachment; filename=" . $filetitle);
             header("Content-type: audio/mpeg");
             readfile($file_url);
-            
+
             header('Content-Type: audio/mpeg');
-            header("Content-Transfer-Encoding: Binary"); 
+            header("Content-Transfer-Encoding: Binary");
             header("Content-disposition: attachment; filename=\"" . basename($file_url) . "\"");
-            
+
             readfile($file_url);
-        }
-        else {
+        } else {
             $this->redirect("songs");
         }
     }
-    
-    public function comments($songId){
-        $this->viewbag['song'] = $this->db->getById($songId);
-        $this->viewbag['comments'] = $this->db->getComments($songId);
-        if($this->isPost){
+
+    public function comments($songId) {
+
+        if ($this->isPost) {
             $this->authorized();
-            
+
             $comment = $_POST['comment'];
-            if(!$comment || strlen($comment)<10){
+            if (!$comment || strlen($comment) < 10) {
                 $this->addErrorMessage("Your comment should be at last 10 symbols!");
-                return $this->renderView(__FUNCTION__);
-            }
-            
-            $userId = $this->getUserDetails()['id'];
-            $isCommentAdded = $this->db->addComment($songId, $userId, $comment);
-            if($isCommentAdded){
-                $this->addInfoMessage("Comment added!");
             } else {
-                $this->addErrorMessage("Comment wasn't added!");
+                $userId = $this->getUserDetails()['id'];
+                $isCommentAdded = $this->db->addComment($songId, $userId, $comment);
+                if ($isCommentAdded) {
+                    $this->addInfoMessage("Comment added!");
+                } else {
+                    $this->addErrorMessage("Comment wasn't added!");
+                }
             }
         }
+        $this->viewbag['song'] = $this->db->getById($songId);
+        $this->viewbag['comments'] = $this->db->getComments($songId);
+
         $this->renderView(__FUNCTION__);
     }
-    
-    private function saveImageFile($rowId, $fileNewName){
+
+    private function saveImageFile($rowId, $fileNewName) {
         $this->authorized();
 
         $target_dir = "uploads/covers/";
-        $imageFileType = pathinfo($_FILES["image"]["name"],PATHINFO_EXTENSION);
-        $target_full_path = $target_dir . $fileNewName.".".$imageFileType;
-        $target_file = $fileNewName.".".$imageFileType;
+        $imageFileType = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+        $target_full_path = $target_dir . $fileNewName . "." . $imageFileType;
+        $target_file = $fileNewName . "." . $imageFileType;
         if ($_FILES["image"]["size"] > 500000) { //5mb
             $this->addErrorMessage("Sorry, your image file is too large.");
             return false;
         }
-        
+
         $check = getimagesize($_FILES["image"]["tmp_name"]);
-        if($check === false) {
+        if ($check === false) {
             $this->addErrorMessage("File is not an image.");
             return false;
         }
 
-        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-        && $imageFileType != "gif" ) {
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
             $this->addErrorMessage("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
             return false;
         }
@@ -125,8 +128,8 @@ class SongsController extends BaseController {
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_full_path)) {
             $userId = $this->getUserDetails()["id"];
             $isUploaded = $this->db->updateImage($rowId, $userId, $target_file);
-            if($isUploaded){
-                $this->addInfoMessage("The image file ". basename($_FILES["song"]["name"]). " has been uploaded.");
+            if ($isUploaded) {
+                $this->addInfoMessage("The image file " . basename($_FILES["song"]["name"]) . " has been uploaded.");
                 return true;
             }
         }
@@ -134,17 +137,17 @@ class SongsController extends BaseController {
         $this->addErrorMessage("Sorry, there was an error uploading image file.");
         return false;
     }
-    
-    private function saveMusicFile($fileNewName){
+
+    private function saveMusicFile($fileNewName) {
         $this->authorized();
 
         $extension = explode(".", $_FILES["song"]["name"]);
-        $extension = $extension[count($extension)-1];
-        $fileNewName .= ".".$extension;
+        $extension = $extension[count($extension) - 1];
+        $fileNewName .= "." . $extension;
         $target_dir = "uploads/";
         $target_file = $target_dir . $fileNewName;
 
-        if($_FILES["song"]["type"] != "audio/mpeg" || $extension != "mp3"){
+        if ($_FILES["song"]["type"] != "audio/mpeg" || $extension != "mp3") {
             $this->addErrorMessage("Sorry, only MP3 files are allowed.");
             $this->renderView(__FUNCTION__);
             return false;
@@ -160,8 +163,8 @@ class SongsController extends BaseController {
             $genreId = $_POST["genre"];
             $user_id = $this->getUserDetails()["id"];
             $rowId = $this->db->uploadSong($songTitle, $fileNewName, $user_id, $genreId);
-            if($rowId){
-                $this->addInfoMessage("The file ". basename($_FILES["song"]["name"]). " has been uploaded.");
+            if ($rowId) {
+                $this->addInfoMessage("The file " . basename($_FILES["song"]["name"]) . " has been uploaded.");
                 $this->renderView();
                 return $rowId;
             }
@@ -170,4 +173,5 @@ class SongsController extends BaseController {
         $this->addErrorMessage("Sorry, there was an error uploading your file.");
         return false;
     }
+
 }

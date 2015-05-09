@@ -1,9 +1,5 @@
-<pre>
-    <?php $song = $this->viewbag['song'];
-    var_dump($this->viewbag['comments']);
-        
-    ?>
-</pre>  
+<?php $song = $this->viewbag['song']; ?>
+
 <div class="row">
     <div class="col-md-4 col-sm-6">
         <div class="col-sm-12">
@@ -25,11 +21,12 @@
               Your browser does not support the audio element.
             </audio>
         </div>
-        <div class="col-sm-12"><b>Uploaded by: </b><?=$song['username']?></div>
+        <div class="col-sm-12"><b>Uploaded by: </b><?=htmlspecialchars($song['username'])?></div>
         <div class="col-sm-12"><b>Genre: </b><?=$song['name']?></div>
         <div class="col-sm-12">
             <form action="/songs/rate/<?=$song['id']?>" method="post" style="display:inline-block">
                 <input value="<?=$song['rank']?>" class="rating form-control" data-step="1" data-max="5" data-min="0" data-size="xs"  data-show-caption="false" data-show-clear="false" name="rating-value">
+                <input type="hidden" name="redirectTo" value="/songs/comments/<?=$song['id']?>"/>
             </form> / <?=$song['votes']?>
             <div class="pull-right">
                 <form target="_blank" action="/songs/download" method="post" style="display:inline-block">
@@ -48,8 +45,8 @@
         <?php endif; ?>
             <?php foreach ($this->viewbag['comments'] as $comment): ?>
                 <div class="well">
-                    <div style="font-weight: bold"><?=$comment['username']?></div>
-                    <?=$comment['text']?>
+                    <div style="font-weight: bold"><?=htmlspecialchars($comment['username'])?></div>
+                    <?=htmlspecialchars($comment['text'])?>
                     <div class="text-muted" ><?=$comment['date_created']?></div>
                 </div>
             <?php endforeach; ?>
