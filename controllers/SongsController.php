@@ -40,42 +40,86 @@ class SongsController extends BaseController {
     public function upload(){
         $this->viewbag["genres"] = $this->genresDb->getAll();
         if($this->isPost){
-            $extension = explode(".", $_FILES["song"]["name"]);
-            $extension = $extension[count($extension)-1];
-
-            $fileNewName = $this->generateRandomString().".".$extension;
-            $target_dir = "uploads/";
-            $target_file = $target_dir . $fileNewName;
-
+            $fileNewName = $this->generateRandomString();
             if(isset($_POST["submit"])) {
-                if($_FILES["song"]["type"] != "audio/mpeg" || $extension != "mp3"){
-                    $this->addErrorMessage("Sorry, only MP3 files are allowed.");
-                    $this->renderView(__FUNCTION__);
-                    return;
+                $rowId = $this->saveMusicFile($fileNewName);
+                if($rowId && $_FILES["image"]){
+                    $asd = $this->saveImageFile($rowId, $fileNewName);
+                    var_dump($asd);
                 }
-                if ($_FILES["song"]["size"] > 5000000) {
-                    $this->addErrorMessage("Sorry, your file is too large.");
-                    $this->renderView(__FUNCTION__);
-                    return;
-                }
-                
-                if (move_uploaded_file($_FILES["song"]["tmp_name"], $target_file)) {
-                    $songTitle = substr($_FILES["song"]["name"], 0, -4);
-                    $genreId = $_POST["genre"];
-                    $user_id = $this->getUserDetails()["id"];
-                    $isUploaded = $this->db->uploadSong($songTitle, $fileNewName, $user_id, $genreId);
-                    if($isUploaded){
-                        $this->addInfoMessage("The file ". basename($_FILES["song"]["name"]). " has been uploaded.");
-                        $this->renderView();
-                        return;
-                    }
-                }
-
-                $this->addErrorMessage("Sorry, there was an error uploading your file.");
             }
         }
         
         $this->renderView();
+    }
+    
+    private function saveImageFile($rowId, $fileNewName){
+        $target_dir = "uploads/covers/";
+        $imageFileType = pathinfo($_FILES["image"]["name"],PATHINFO_EXTENSION);
+        $target_full_path = $target_dir . $fileNewName.".".$imageFileType;
+        $target_file = $fileNewName.".".$imageFileType;
+        if ($_FILES["image"]["size"] > 500000) { //5mb
+            $this->addErrorMessage("Sorry, your image file is too large.");
+            return false;
+        }
+        
+        $check = getimagesize($_FILES["image"]["tmp_name"]);
+        if($check === false) {
+            $this->addErrorMessage("File is not an image.");
+            return false;
+        }
+
+        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+        && $imageFileType != "gif" ) {
+            $this->addErrorMessage("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+            return false;
+        }
+
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_full_path)) {
+            $userId = $this->getUserDetails()["id"];
+            $isUploaded = $this->db->updateImage($rowId, $userId, $target_file);
+            if($isUploaded){
+                $this->addInfoMessage("The image file ". basename($_FILES["song"]["name"]). " has been uploaded.");
+                return true;
+            }
+        }
+
+        $this->addErrorMessage("Sorry, there was an error uploading image file.");
+        return false;
+    }
+    
+    private function saveMusicFile($fileNewName){
+        $extension = explode(".", $_FILES["song"]["name"]);
+        $extension = $extension[count($extension)-1];
+        $fileNewName .= ".".$extension;
+        $target_dir = "uploads/";
+        $target_file = $target_dir . $fileNewName;
+
+        if($_FILES["song"]["type"] != "audio/mpeg" || $extension != "mp3"){
+            $this->addErrorMessage("Sorry, only MP3 files are allowed.");
+            $this->renderView(__FUNCTION__);
+            return false;
+        }
+        if ($_FILES["song"]["size"] > 8000000) { //8 mb
+            $this->addErrorMessage("Sorry, your mp3 file is too large.");
+            $this->renderView(__FUNCTION__);
+            return false;
+        }
+
+        if (move_uploaded_file($_FILES["song"]["tmp_name"], $target_file)) {
+            $songTitle = substr($_FILES["song"]["name"], 0, -4);
+            $genreId = $_POST["genre"];
+            $user_id = $this->getUserDetails()["id"];
+            $rowId = $this->db->uploadSong($songTitle, $fileNewName, $user_id, $genreId);
+            if($rowId){
+                $this->addInfoMessage("The file ". basename($_FILES["song"]["name"]). " has been uploaded.");
+                $this->renderView();
+                return $rowId;
+            }
+        }
+
+        $this->addErrorMessage("Sorry, there was an error uploading your file.");
+        return false;
     }
     
     public function download(){

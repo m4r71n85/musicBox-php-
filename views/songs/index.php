@@ -7,6 +7,9 @@
                 <b><?=$song['title']?></b>
             </div>
         </div>
+        <div class="col-sm-12 text-center" style="padding-bottom: 10px;">
+            <img src="/uploads/covers/<?=$song['imagename']?>" style="max-width: 100%; max-height: 100%; min-height: 300px;"/></b>
+        </div>
         <div class="col-sm-12">
             <audio controls>
                 <source src="/uploads/<?=$song['filename']?>" type="audio/mpeg">

@@ -3,7 +3,7 @@
     class SongsModel extends BaseModel {
         public function getAll() {
             $statement = self::$db->query(
-                "SELECT s.id, s.title, s.filename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
+                "SELECT s.id, s.title, s.filename, s.imagename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
                 FROM `songs` as s
                 LEFT JOIN users as u ON (s.user_id = u.id)
                 LEFT JOIN genres as g ON (s.genre_id = g.id)
@@ -46,11 +46,25 @@
             if (!$title || !$filename || !$user_id || !$genre_id) {
                 return false;
             }
+
             $statement = self::$db->prepare(
                 "INSERT INTO `musicbox`.`songs`
                 (`id`, `title`, `filename`, `user_id`, `genre_id`)
                 VALUES (NULL, ?, ?, ?, ?);");
             $statement->bind_param("ssii", $title, $filename, $user_id, $genre_id);
+            $statement->execute();
+            return $statement->insert_id;
+        }
+        
+         public function updateImage($rowId, $userId, $imagename) {
+             
+            if (!$rowId || !$userId || !$imagename) {
+                return false;
+            }
+            $statement = self::$db->prepare(
+                "UPDATE songs SET imagename = ?
+                WHERE id = ? AND user_id = ?;");
+            $statement->bind_param("sii", $imagename, $rowId, $userId);
             $statement->execute();
             return $statement->affected_rows > 0;
         }

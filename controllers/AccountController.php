@@ -56,7 +56,7 @@ class AccountController extends BaseController{
             if($userDetails){
                 parent::loginUser($userDetails);
                 $this->addInfoMessage("Login successful!");
-                $this->redirect("books", "index");
+                $this->redirect("songs");
             }
             else {
                 $this->addErrorMessage("Login error!");
