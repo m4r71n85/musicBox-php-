@@ -42,6 +42,7 @@ class SongsController extends BaseController {
     }
 
     public function upload() {
+
         $this->authorized();
 
         $this->viewbag["genres"] = $this->genresDb->getAll();
@@ -55,7 +56,7 @@ class SongsController extends BaseController {
             }
         }
 
-        $this->renderView();
+        $this->renderView(__FUNCTION__);
     }
 
     public function download() {
@@ -175,12 +176,10 @@ class SongsController extends BaseController {
 
         if ($_FILES["song"]["type"] != "audio/mpeg" || $extension != "mp3") {
             $this->addErrorMessage("Sorry, only MP3 files are allowed.");
-            $this->renderView(__FUNCTION__);
             return false;
         }
         if ($_FILES["song"]["size"] > 8000000) { //8 mb
             $this->addErrorMessage("Sorry, your mp3 file is too large.");
-            $this->renderView(__FUNCTION__);
             return false;
         }
 
@@ -191,7 +190,6 @@ class SongsController extends BaseController {
             $rowId = $this->db->uploadSong($songTitle, $fileNewName, $user_id, $genreId);
             if ($rowId) {
                 $this->addInfoMessage("The file " . basename($_FILES["song"]["name"]) . " has been uploaded.");
-                $this->renderView();
                 return $rowId;
             }
         }

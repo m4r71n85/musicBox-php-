@@ -39,6 +39,10 @@
         </div>
     </div>
     <div class="col-md-6">
+        <form method="post" style="margin-bottom: 50px;">
+            <textarea class="form-control" name="comment"  pattern=".{3,}"   required title="3 characters minimum"></textarea>
+            <button type="submit" class="btn btn-default btn-info pull-right">Comment</button>
+        </form>
         <?php if(!$this->viewbag['comments']): ?>
             <div class="well">Oops. There are no comments yet.</div>
         <?php endif; ?>
@@ -49,9 +53,6 @@
                     <div class="text-muted" ><?=$comment['date_created']?></div>
                 </div>
             <?php endforeach; ?>
-        <form method="post">
-            <textarea class="form-control" name="comment"  pattern=".{3,}"   required title="3 characters minimum"></textarea>
-            <button type="submit" class="btn btn-default btn-info pull-right">Comment</button>
         </div>
     </div>
 </div>
