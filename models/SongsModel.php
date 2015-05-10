@@ -44,6 +44,32 @@
             $statement->execute();
             return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
         }
+        public function search($phrase, $searchBy){
+            $phrase = "%".$phrase."%";
+            
+            if($searchBy == "genre"){
+                $searchBy = "g.name";
+            }
+            else if($searchBy == "username"){
+                $searchBy = "u.username";
+            }
+            else{
+                $searchBy = "s.title";
+            }
+            
+            $statement = self::$db->prepare(
+                "SELECT s.id, s.title, s.filename, s.imagename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
+                FROM `songs` as s
+                LEFT JOIN users as u ON (s.user_id = u.id)
+                LEFT JOIN genres as g ON (s.genre_id = g.id)
+                LEFT JOIN song_rank as sr ON (sr.song_id = s.id)
+                WHERE ".$searchBy." like ?
+                GROUP BY s.id
+                ORDER BY  (sum(sr.rank_value)/count(sr.id)) DESC, s.title ASC");
+            $statement->bind_param("s", $phrase);
+            $statement->execute();
+            return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
         
         public function getGenre($genreId) {
             $statement = self::$db->query(

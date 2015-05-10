@@ -1,5 +1,28 @@
-<h1>My songs <a href="/songs/upload" class="btn btn-info">
+<div class="row">
+    <div class="col-md-6">
+<h1>Search songs <a href="/songs/upload" class="btn btn-info">
         <i class="glyphicon glyphicon-plus"></i> Upload a song</a></h1>
+    </div>
+    <div class="col-md-6">
+        <form action="/songs/search" class="navbar-form navbar-right" role="search" method="get">
+            <div class="input-group">
+                <input name="phrase" type="text" class="form-control" placeholder="Search for song..." pattern=".{3,}"   required title="3 characters minimum" value="<?=$this->viewbag["phrase"]?>">
+              <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default" type="button"><i class="glyphicon glyphicon-search"></i></button>
+              </span>
+            </div>
+            <label>Search by:</label>
+            <select name="searchBy" class="form-control">
+                <option value="title" 
+                    <?=$this->viewbag['searchBy']=="title"?"selected":""?> >Title</option>
+                <option value="username" 
+                    <?=$this->viewbag['searchBy']=="username"?"selected":""?>>Username</option>
+                <option value="genre"
+                    <?=$this->viewbag['searchBy']=="genre"?"selected":""?>>Genre</option>
+            </select>
+        </form>
+    </div>
+</div>
 <div class="row">
 <?php foreach ($this->viewbag["songs"] as $song): ?>
     <div class="col-md-4 col-sm-6 song-tiles">

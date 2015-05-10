@@ -112,6 +112,21 @@ class SongsController extends BaseController {
         $this->viewbag["songs"] = $songs;
         $this->renderView();
     }
+    
+    public function search() {
+        $this->title = "Search";
+        $phrase = isset($_GET['phrase'])? $_GET['phrase'] : "";
+        $searchBy = isset($_GET['searchBy'])? $_GET['searchBy'] : "title";
+        $songs = array();
+        if($phrase){
+            $songs = $this->db->search($phrase, $searchBy);
+        }
+        
+        $this->viewbag["phrase"] = $phrase;
+        $this->viewbag["searchBy"] = $searchBy;
+        $this->viewbag["songs"] = $songs;
+        $this->renderView();
+    }
 
     private function saveImageFile($rowId, $fileNewName) {
         $this->authorized();

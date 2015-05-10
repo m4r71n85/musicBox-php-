@@ -34,7 +34,6 @@
                     <input type="hidden" value="uploads/<?=$song['filename']?>" name="filename"  >
                     <input type="hidden" value="<?=$song['title']?>.mp3" name="filetitle" />
                 </form>
-                <a href="/songs/comments/<?=$song['id']?>" class="btn btn-sm btn-info glyphicon glyphicon-comment"></a>
                 <button class="btn btn-sm btn-info glyphicon glyphicon-plus"></button>
             </div>
         </div>
@@ -51,7 +50,7 @@
                 </div>
             <?php endforeach; ?>
         <form method="post">
-            <textarea class="form-control" name="comment"></textarea>
+            <textarea class="form-control" name="comment"  pattern=".{3,}"   required title="3 characters minimum"></textarea>
             <button type="submit" class="btn btn-default btn-info pull-right">Comment</button>
         </div>
     </div>
