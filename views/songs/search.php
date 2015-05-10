@@ -67,4 +67,9 @@
         </div>
     </div>
 <?php endforeach; ?>
+    <?php if(count($this->viewbag["songs"])==0): ?>
+    <div class="well">
+        Sorry no songs were found with this search criteria!
+    </div>
+    <?php endif; ?>
 </div>
