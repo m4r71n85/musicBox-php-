@@ -31,8 +31,8 @@
         }
         
         public function getByUserId($userId){
-            $statement = self::$db->query(
-                "SELECT s.id, s.title, s.filename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '-') as rank, count(sr.id) as votes
+            $statement = self::$db->prepare(
+                "SELECT s.id, s.title, s.filename, s.imagename, u.username, g.name, IFNULL((sum(sr.rank_value)/count(sr.id)), '') as rank, count(sr.id) as votes
                 FROM `songs` as s
                 LEFT JOIN users as u ON (s.user_id = u.id)
                 LEFT JOIN genres as g ON (s.genre_id = g.id)
@@ -41,7 +41,8 @@
                 GROUP BY s.id
                 ORDER BY  (sum(sr.rank_value)/count(sr.id)) DESC, s.title ASC");
             $statement->bind_param("i", $userId);
-            return $statement->fetch_all(MYSQLI_ASSOC);
+            $statement->execute();
+            return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
         }
         
         public function getGenre($genreId) {

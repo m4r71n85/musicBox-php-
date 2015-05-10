@@ -28,7 +28,7 @@ class SongsController extends BaseController {
             if (0 <= $ratingValue && $ratingValue <= 5) {
                 $success = $this->db->vote($songId, $userId, $ratingValue);
                 if (!$success) {
-                    $this->addErrorMessage("You cannot vote for this song!");
+                    $this->addErrorMessage("You can vote only once per song!");
                 }
             } else {
                 $this->addErrorMessage("Your vote must be between 0 and 5!");
@@ -100,6 +100,17 @@ class SongsController extends BaseController {
         $this->viewbag['comments'] = $this->db->getComments($songId);
 
         $this->renderView(__FUNCTION__);
+    }
+    
+    public function mine() {
+        $this->title = "My Songs";
+        $this->authorized();
+        
+        $userId = $this->getUserDetails()["id"];
+        $songs = $this->db->getByUserId($userId);
+
+        $this->viewbag["songs"] = $songs;
+        $this->renderView();
     }
 
     private function saveImageFile($rowId, $fileNewName) {

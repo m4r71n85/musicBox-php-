@@ -1,6 +1,7 @@
 <h1>All songs <a href="/songs/upload" class="btn btn-info">
         <i class="glyphicon glyphicon-plus"></i> Upload a song</a></h1>
 <div class="row">
+
 <?php foreach ($this->viewbag["songs"] as $song): ?>
     <div class="col-md-4 col-sm-6 song-tiles">
         <div class="col-sm-12">
@@ -27,6 +28,7 @@
         <div class="col-sm-12">
             <form action="/songs/rate/<?=$song['id']?>" method="post" style="display:inline-block">
                 <input value="<?=$song['rank']?>" class="rating form-control" data-step="1" data-max="5" data-min="0" data-size="xs"  data-show-caption="false" data-show-clear="false" name="rating-value">
+                <input type="hidden" name="redirectTo" value="/songs/mine"/>
             </form>
             <div class="pull-right">
                 <form target="_blank" action="/songs/download" method="post" style="display:inline-block">

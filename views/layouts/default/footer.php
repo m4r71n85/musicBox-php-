@@ -17,7 +17,7 @@
     
     <script>
         $(".messages").slideDown("fast");
-        setTimeout( "$('.messages').slideUp('fast');", 2000);
+        setTimeout( "$('.messages').slideUp('fast');", 3000);
         $(".messages").on("click", function(){
             $(this).slideUp("fast");
         });

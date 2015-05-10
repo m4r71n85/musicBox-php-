@@ -41,6 +41,9 @@
                         <a href="/songs">All Songs</a>
                     </li>
                     <li>
+                        <a href="/songs/mine">My Songs</a>
+                    </li>
+                    <li>
                         <a href="/playlists">All Playlists</a>
                     </li>
                     <li>
